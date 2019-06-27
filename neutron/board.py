@@ -6,60 +6,70 @@ from numpy import median
 
 
 class Board:
-    def __init__(self, x: int, y: int):
-        if x % 2 == 0 or y % 2 == 0:
-            raise ValueError('x and y must be uneven')
-        elif x < 3 or y < 3 or x > 26 or y > 26:
-            raise ValueError('x and y must be 3 >= x|y =< 26')
+    def __init__(self, row: int, column: int):
+        if row % 2 == 0 or column % 2 == 0:
+            raise ValueError('row and column must be uneven')
+        elif row < 3 or column < 3 or row > 26 or column > 26:
+            raise ValueError('row and column must be 3 >= row|column =< 26')
 
-        self._x = x
-        self._y = y
+        self._row = row
+        self._column = column
 
-        for i in ascii_uppercase[:y]:
+        for i in ascii_uppercase[:column]:
             if i == ascii_uppercase[0]:
-                setattr(self, i, {j: Token(self, 'O') for j in range(x)})
-            elif i == ascii_uppercase[x - 1]:
-                setattr(self, i, {j: Token(self, 'X') for j in range(x)})
-            elif i == ascii_uppercase[int(median(range(y)))]:
+                setattr(self, i, {j: Token(self, j, i, 'O') for j in range(row)})
+            elif i == ascii_uppercase[row - 1]:
+                setattr(self, i, {j: Token(self, j, i, 'X') for j in range(row)})
+            elif i == ascii_uppercase[int(median(range(column)))]:
                 setattr(self, i,
-                        {j: Token(self, None) if j != median(range(x)) else Token(self, 'N') for j in range(x)})
+                        {j: Token(self, j, i, None) if j != median(range(row)) else Token(self, j, i, 'N') for j in
+                         range(row)})
             else:
-                setattr(self, i, {j: Token(self, None) for j in range(y)})
+                setattr(self, i, {j: Token(self, j, i, None) for j in range(column)})
 
 
     @property
-    def y(self):
+    def column(self):
         return tuple(i for i in vars(self) if not i.startswith('_'))
 
 
-    def x(self, y):
-        return getattr(self, str(y))
+    def row(self, column):
+        return getattr(self, str(column))
 
 
-    def free(self, y, x) -> bool:
-        return not self.x(y).get(x)
+    def free(self, column, row) -> bool:
+        return not self.row(column).get(row)
 
 
     def __repr__(self):
-        head = "\t".join(self.y)
-        index = tuple(range(self._x))
-        board = list([i] + [k for k in self.x(ascii_uppercase[i]).values()] for i in index)
+        head = "\t".join(self.column)
+        index = tuple(range(self._row))
+        board = list([i] + [k for k in self.row(ascii_uppercase[i]).values()] for i in index)
         return '\t{head}\n{rows}'.format(head=head, rows='\n'.join(['\t'.join(map(str, n)) for n in board]))
 
 
 class Token:
-    def __init__(self, board: Board, symbol: str = None):
+    def __init__(self, board: Board, row: int, column: int, scolumnmbol: str = None):
         self.board = board
-        self.symbol = symbol
+        self.row = row
+        self.column = column
+        self.scolumnmbol = scolumnmbol
 
 
     def __repr__(self):
-        return f'[{self.symbol}]' if self.symbol is not None else '[ ]'
-
-    # def move_up(self):
-    #     for i in range(self.y, board.y)
+        return f'[{self.scolumnmbol}]' if self.scolumnmbol is not None else '[ ]'
 
 
-for i in range(3, 26, 2):
-    print(Board(i, i))
-    print()
+    @property
+    def location(self):
+        return self.column, self.row
+
+
+    def move_up(self):
+        for i in range(self.row, self.board._row, -1):
+            print(i)
+
+
+b = Board(5, 5)
+print(b)
+print(b.row('A')[4].move_up())
