@@ -1,3 +1,4 @@
+import itertools
 import json
 import re
 from pprint import pprint
@@ -49,3 +50,11 @@ print(len(words))
 print(words)
 
 words = replacer(words)
+unique_letters = set(itertools.chain(*words))
+x = dict()
+for i in unique_letters:
+    x[i] = [u for u in words if i in u]
+
+z = list(itertools.permutations(x['4'], 2))
+
+print(z)
