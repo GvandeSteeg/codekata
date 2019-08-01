@@ -104,7 +104,7 @@ def potential_words(word: Sequence[str], alphawords: Set[str]):
             continue
 
         # If any known letters are not in potential word, skip
-        if not all_knowns_in_potential(word_hash, potential_word):
+        if not all_knowns_in_potential(word, potential_word):
             continue
 
         # Check whether both words have letters in the same positions
