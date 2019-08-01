@@ -14,27 +14,28 @@ num_range = set(map(str, range(1, len(ascii_uppercase) + 1)))
 
 def load_values() -> Tuple[List[List[str]], Dict[str, List[List[str]]]]:
     """Load Board and Letters from JSON"""
-    with open("day1.json") as f:
+    with open("day2.json") as f:
         json_o = json.load(f)
         board = json_o["board"]
         letters = json_o["letters"]
         return board, letters
 
 
-def get_all_words(board: Sequence[Sequence[str]]) -> List[str]:
+def get_all_words(board: Sequence[Sequence[str]]) -> List[List[str]]:
     """Returns all words from each horizontal row in the board, splitting by 0"""
     all_words = []
     for row in board:
-        wo = "-".join(map(str, row)).split('-0-')
-        word = [w.strip("-") for w in wo]
-        words = [w.split('-') for w in word if "-" in w]
-        for w in words:
-            try:
-                w.remove('0')
-            except ValueError:
-                pass
-
-        all_words += words
+        word = []
+        for num in row:
+            num = str(num)
+            if not int(num):
+                if len(word) > 1:
+                    all_words.append(word)
+                word = []
+            else:
+                word.append(num)
+        if len(word) > 1:
+            all_words.append(word)
 
     return all_words
 
@@ -194,6 +195,7 @@ def run():
                 continue
 
             new_words = list(potential_words(x, alpha_words))
+            print(new_words)
             if len(new_words) == 1:
                 new_word = new_words[0]
                 update_letters(x, new_word)
